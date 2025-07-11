@@ -1,34 +1,29 @@
 #!/bin/bash
 
-set -e
+# Update package list and install git and wget
+sudo apt update
+sudo apt install -y git wget
 
-echo "Updating packages..."
-sudo apt-get update -y
+# Clone the Nusantara repository
+git clone https://github.com/sguresearcher/nusantara.git
 
-echo "Installing prerequisites..."
-sudo apt-get install -y \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release
-
-echo "Adding Docker GPG key..."
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-
-echo "Adding Docker repository..."
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
-  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-echo "Updating apt package index..."
-sudo apt-get update -y
-
-echo "Installing Docker Engine, CLI, containerd, and Docker Compose plugin..."
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-echo "Adding current user to docker group..."
-sudo usermod -aG docker "$USER"
-
-echo "Docker and Docker Compose installation complete!"
-echo "You may need to log out and log back in to use Docker without sudo."
+# Pull all required Docker images
+docker pull ghcr.io/dfir-iris/iriswebapp_db:v2.4.19
+docker pull ghcr.io/dfir-iris/iriswebapp_app:v2.4.19
+docker pull ghcr.io/dfir-iris/iriswebapp_nginx:v2.4.19
+docker pull rabbitmq:3-management-alpine
+docker pull iriswebapp_db:v2.4.7
+docker pull iriswebapp_app:v2.4.7
+docker pull iriswebapp_nginx:v2.4.7
+docker pull ixdotai/smtp
+docker pull valkey/valkey:7.2
+docker pull mariadb:10.11
+docker pull ghcr.io/misp/misp-docker/misp-core:v2.4.197
+docker pull ghcr.io/misp/misp-docker/misp-modules:v2.4.197
+docker pull ghcr.io/shuffle/shuffle-frontend:1.4.2
+docker pull ghcr.io/shuffle/shuffle-backend:1.4.2
+docker pull ghcr.io/shuffle/shuffle-orborus:1.4.0
+docker pull opensearchproject/opensearch:2.14.0
+docker pull wazuh/wazuh-manager:4.9.2
+docker pull wazuh/wazuh-indexer:4.9.2
+docker pull wazuh/wazuh-dashboard:4.9.2
